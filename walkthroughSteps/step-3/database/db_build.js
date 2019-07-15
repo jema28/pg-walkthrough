@@ -1,13 +1,14 @@
 const fs = require('fs');
 
-const dbConnection = require('./db_connection');
+const dbConnection = require('./db_connection')
 
 const sql = fs
   .readFileSync(`${__dirname}/db_build.sql`)
-  .toString();
+  .toString()
 
 dbConnection.query(sql, (err, res) => {
-  if (err) 
-    throw err;
-  console.log('Super heroes table created with result: ', res);
-});
+  if (err) {
+    throw err
+  }
+  console.log('Super heroes table created with result: ', res)
+})
