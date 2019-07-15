@@ -1,5 +1,7 @@
 # Pg Walkthrough Notes
 
+This workshop is intended to be delivered as a code-along. This file contains the mentor notes, and the `step-*` folders in the same directory as this file contain the correct code after the corresponding step. There is no `step-1` folder as step 1 is simply inspecting the files. The students should code in the root directory.
+
 ## Getting Started
 
 1. Clone the repo
@@ -99,19 +101,19 @@ Our database is now outlined, but we need a way to connect it
 3. Import `Pool`, `url` and `env2`:
 
    ```js
-   const { Pool } = require('pg');
-   const url = require('url');
-   require('env2')('./config.env');
+   const { Pool } = require('pg')
+   const url = require('url')
+   require('env2')('./config.env')
 
    if (!process.env.DB_URL)
-     throw new Error('Environment variable DB_URL must be set');
+     throw new Error('Environment variable DB_URL must be set')
    ```
 
    - `{ Pool }` is syntactic sugar (shorten/simplify syntax with abstraction) ([destructuring assignment](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)) that is equivalent to:
 
      ```js
-     const pg = require('pg');
-     const Pool = pg.Pool;
+     const pg = require('pg')
+     const Pool = pg.Pool
      ```
 
    - [`Connection pooling`](https://en.wikipedia.org/wiki/Connection_pool) is a cache of multiple database connections that are kept open for a timeout period (`idleTimeoutMillis`) and reused when future requests are required, minimising the resource impact of opening/closing connections constantly for write/read heavy apps. Reusing connections minimises latency too. Debug/demo logging `Pool` might be helpful.
@@ -123,15 +125,15 @@ Our database is now outlined, but we need a way to connect it
 4. Parse the URL and authentication info with this code:
 
    ```js
-   const params = url.parse(process.env.DB_URL);
-   const [username, password] = params.auth.split(':');
+   const params = url.parse(process.env.DB_URL)
+   const [username, password] = params.auth.split(':')
    ```
 
    - `url.parse(<url string here>)` will split a URL/HREF string into an object of values like `protocol`, `auth`, `hostname`, `port`: [URL split documentation](https://nodejs.org/api/url.html#url_url_strings_and_url_objects)
    - `[username, password]` is a ES6 destructuring assignment that is syntactic sugar for:
      ```js
-     const username = params.auth.split(':')[0];
-     const password = params.auth.split(':')[1];
+     const username = params.auth.split(':')[0]
+     const password = params.auth.split(':')[1]
      ```
 
    Where username is index 0 of `params.auth.split(':')` and password is index 1, and so on.
@@ -146,8 +148,8 @@ Our database is now outlined, but we need a way to connect it
      max: process.env.DB_MAX_CONNECTIONS || 2,
      user: username,
      password,
-     ssl: params.hostname !== 'localhost',
-   };
+     ssl: params.hostname !== 'localhost'
+   }
    ```
 
    - Use an appropriate number for `max`. More connections mean more memory is used, and too many can crash the database server. Always return connections to the pool (don't block/freeze query callbacks), or the pool will deplete. More connections mean more queries can be run at once and more redundancy incase connections are blocked/frozen.
@@ -157,7 +159,7 @@ Our database is now outlined, but we need a way to connect it
 6. Export the Pool object with options with:
 
    ```js
-   module.exports = new Pool(options);
+   module.exports = new Pool(options)
    ```
 
    - This exports the Pool constructor/object with the previously set options object, for other files to use this connection pool with `dbConnection.query` where `dbConnection` is the exported `Pool`.
@@ -165,16 +167,16 @@ Our database is now outlined, but we need a way to connect it
 7. Create a file: `database/db_build.js` with this code:
 
    ```js
-   const fs = require('fs');
+   const fs = require('fs')
 
-   const dbConnection = require('./db_connection');
+   const dbConnection = require('./db_connection')
 
-   const sql = fs.readFileSync(`${__dirname}/db_build.sql`).toString();
+   const sql = fs.readFileSync(`${__dirname}/db_build.sql`).toString()
 
    dbConnection.query(sql, (err, res) => {
-     if (err) throw err;
-     console.log('Super heroes table created with result: ', res);
-   });
+     if (err) throw err
+     console.log('Super heroes table created with result: ', res)
+   })
    ```
 
    - Where `fs` is the Node file system module.
@@ -190,7 +192,7 @@ Now that we have all the correct files, let's get this database up and running.
 
 1. In your command line, run `psql` (Mac/Linux) or `sudo -u postgres psql` (Linux).
 
-2. Create the database by typing `CREATE DATABASE superheroes;` into your Postgres CLI client.
+2. Create the database by typing `CREATE DATABASE film;` into your Postgres CLI client.
 
 3. Create a user specifically for the database with a password by typing `CREATE USER [the new username] WITH PASSWORD '[the password of the database]'`;
 
@@ -208,7 +210,7 @@ Now that we have all the correct files, let's get this database up and running.
 
 7. Try connecting to the database by typing `psql postgres://[username]:[password]@localhost:5432/[database]` and test if everything worked by typing `SELECT * FROM superheroes;`. You should see the data we entered in `db_build.sql` appear.
 
-If you experience permission problems, try running `psql superheroes` then `GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO [the new username];`
+If you experience permission problems, try running `psql film` then `GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO [the new username];`
 
 ## Step 4 – connecting to our database from the server
 
@@ -219,7 +221,7 @@ Let's first write a file that gets our information from the database.
 2. Import `db_connection.js`:
 
    ```js
-   const dbConnection = require('../databases/db_connection');
+   const dbConnection = require('../databases/db_connection')
    ```
 
 3. Write an asynchronous `getData` function that takes and returns a callback.
@@ -227,11 +229,11 @@ Let's first write a file that gets our information from the database.
    ```js
    const getData = cb => {
      dbConnection.query('SELECT * FROM superheroes;', (err, res) => {
-       if (err) return cb(err);
-       console.log('res.rows: ' + res.rows);
-       cb(null, res.rows);
-     });
-   };
+       if (err) return cb(err)
+       console.log('res.rows: ' + res.rows)
+       cb(null, res.rows)
+     })
+   }
    ```
 
    - If there's an error, return `cb(err)` - the return prevents the success code running.
@@ -240,27 +242,27 @@ Let's first write a file that gets our information from the database.
 4. Export `getData`:
 
    ```js
-   module.exports = getData;
+   module.exports = getData
    ```
 
 5. Go to `handler.js` and import `dynamic.js` as `getData`:
 
    ```js
-   const getData = require('./dynamic');
+   const getData = require('./dynamic')
    ```
 
 6. Inside the `'dynamic'` endpoint, call getData with a callback function:
 
    ```js
    getData((err, res) => {
-     if (err) return console.log(err);
+     if (err) return console.log(err)
 
-     let dynamicData = JSON.stringify(res);
+     let dynamicData = JSON.stringify(res)
 
-     response.writeHead(200, { 'content-type': 'application/json' });
+     response.writeHead(200, { 'content-type': 'application/json' })
 
-     response.end(dynamicData);
-   });
+     response.end(dynamicData)
+   })
    ```
 
    - `getData` is asynchronous, so `response.end` should be inside it, so it doesn't run before the data comes back from the database request (same as an API request).

@@ -1,6 +1,6 @@
 BEGIN;
 
-DROP TABLE IF EXISTS superheroes cascade;
+DROP TABLE IF EXISTS superheroes CASCADE;
 
 CREATE TABLE superheroes (
   id SERIAL PRIMARY KEY,
