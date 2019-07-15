@@ -1,4 +1,4 @@
-const getData = require('./dynamic')
+const getData = require('../database/queries/getData')
 const staticSuperHeroes = require('./static')
 
 const handler = (request, response) => {

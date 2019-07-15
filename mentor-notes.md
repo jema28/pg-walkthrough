@@ -138,7 +138,7 @@ If you experience permission problems, try running `psql film` then `GRANT ALL P
 
 Let's first write a file that gets our information from the database.
 
-1. Create a file `src/dynamic.js`.
+1. Create a `queries` folder and `getData.js` file: `database/queries/getData.js`.
 
 2. Import `db_connection.js` and write an asynchronous `getData` function that takes and returns a callback.
 
@@ -157,10 +157,10 @@ Let's first write a file that gets our information from the database.
    module.exports = getData
    ```
 
-3. Import `dynamic.js` in `handler.js` and call getData in 'dynamic' endpoint
+3. Import `getData.js` in `handler.js` and call getData in 'dynamic' endpoint
 
    ```js
-   const getData = require('./dynamic')
+   const getData = require('./database/queries/getData')
 
    if (endpoint === '/dynamic') {
      getData((err, res) => {
