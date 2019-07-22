@@ -1,7 +1,5 @@
 # Pg Walkthrough Notes
 
-This workshop is intended to be delivered as a code-along. This file contains the mentor notes, and the `step-*` folders in the same directory as this file contain the correct code after the corresponding step. There is no `step-1` folder as step 1 is simply inspecting the files. The students should code in the root directory.
-
 ## Step 1: Introduction to the files
 
 1. Clone the repo and install the dependencies in root: `npm i`
